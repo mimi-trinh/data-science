@@ -1,0 +1,2717 @@
+# Midterm Project by Mimi Trinh
+library(forecast)
+library(ggplot2)
+library(fpp2)
+library(car)
+library(MASS)
+library(seasonal)
+library(lubridate)
+library(rdatamarket)
+library(hts)
+library(readr)
+library(tidyverse)
+train=read.csv(file.path('/Users/mimitrinh/Desktop/train.csv'),header=T)
+# to read this in Kaggle, can't use file.path, instead use the following code
+# train=read.csv("../input/train.csv",header=T)
+str(train)
+summary(train)
+sum(is.na(train)) # no missing value
+train$store=as.character(train$store)
+train$item=as.character(train$item)
+str(train)
+head(train)
+tail(train)
+summary(train)
+train$store[train$store=='1']='store01'
+train$store[train$store=='2']='store02'
+train$store[train$store=='3']='store03'
+train$store[train$store=='4']='store04'
+train$store[train$store=='5']='store05'
+train$store[train$store=='6']='store06'
+train$store[train$store=='7']='store07'
+train$store[train$store=='8']='store08'
+train$store[train$store=='9']='store09'
+train$store[train$store=='10']='store10'
+train$item[train$item=='1']='item01'
+train$item[train$item=='2']='item02'
+train$item[train$item=='3']='item03'
+train$item[train$item=='4']='item04'
+train$item[train$item=='5']='item05'
+train$item[train$item=='6']='item06'
+train$item[train$item=='7']='item07'
+train$item[train$item=='8']='item08'
+train$item[train$item=='9']='item09'
+train$item[train$item=='10']='item10'
+train$item[train$item=='11']='item11'
+train$item[train$item=='12']='item12'
+train$item[train$item=='13']='item13'
+train$item[train$item=='14']='item14'
+train$item[train$item=='15']='item15'
+train$item[train$item=='16']='item16'
+train$item[train$item=='17']='item17'
+train$item[train$item=='18']='item18'
+train$item[train$item=='19']='item19'
+train$item[train$item=='20']='item20'
+train$item[train$item=='21']='item21'
+train$item[train$item=='22']='item22'
+train$item[train$item=='23']='item23'
+train$item[train$item=='24']='item24'
+train$item[train$item=='25']='item25'
+train$item[train$item=='26']='item26'
+train$item[train$item=='27']='item27'
+train$item[train$item=='28']='item28'
+train$item[train$item=='29']='item29'
+train$item[train$item=='30']='item30'
+train$item[train$item=='31']='item31'
+train$item[train$item=='32']='item32'
+train$item[train$item=='33']='item33'
+train$item[train$item=='34']='item34'
+train$item[train$item=='35']='item35'
+train$item[train$item=='36']='item36'
+train$item[train$item=='37']='item37'
+train$item[train$item=='38']='item38'
+train$item[train$item=='39']='item39'
+train$item[train$item=='40']='item40'
+train$item[train$item=='41']='item41'
+train$item[train$item=='42']='item42'
+train$item[train$item=='43']='item43'
+train$item[train$item=='44']='item44'
+train$item[train$item=='45']='item45'
+train$item[train$item=='46']='item46'
+train$item[train$item=='47']='item47'
+train$item[train$item=='48']='item48'
+train$item[train$item=='49']='item49'
+train$item[train$item=='50']='item50'
+summary(train)
+str(train)
+head(train)
+tail(train)
+train$level=paste(train$store,train$item,sep='')
+summary(train)
+str(train)
+head(train)
+tail(train)
+model_data=cbind(train[1:1],train[4:5])
+str(model_data)
+head(model_data)
+tail(model_data)
+head(model_data$level[model_data$date=='2016-02-29'])
+# need to remove leap year outlier to get 365 frequency for time series
+model_data=subset(model_data,model_data$date!='2016-02-29')
+str(model_data) # succeed to remove 500 observations
+head(model_data)
+tail(model_data)
+
+#start creating 500 columnns here, see end of this section around line 600
+model_data$store01item01=model_data$sales[model_data$level=='store01item01']
+model_data$store02item01=model_data$sales[model_data$level=='store02item01']
+model_data$store03item01=model_data$sales[model_data$level=='store03item01']
+model_data$store04item01=model_data$sales[model_data$level=='store04item01']
+model_data$store05item01=model_data$sales[model_data$level=='store05item01']
+model_data$store06item01=model_data$sales[model_data$level=='store06item01']
+model_data$store07item01=model_data$sales[model_data$level=='store07item01']
+model_data$store08item01=model_data$sales[model_data$level=='store08item01']
+model_data$store09item01=model_data$sales[model_data$level=='store09item01']
+model_data$store10item01=model_data$sales[model_data$level=='store10item01']
+model_data$store01item02=model_data$sales[model_data$level=='store01item02']
+model_data$store02item02=model_data$sales[model_data$level=='store02item02']
+model_data$store03item02=model_data$sales[model_data$level=='store03item02']
+model_data$store04item02=model_data$sales[model_data$level=='store04item02']
+model_data$store05item02=model_data$sales[model_data$level=='store05item02']
+model_data$store06item02=model_data$sales[model_data$level=='store06item02']
+model_data$store07item02=model_data$sales[model_data$level=='store07item02']
+model_data$store08item02=model_data$sales[model_data$level=='store08item02']
+model_data$store09item02=model_data$sales[model_data$level=='store09item02']
+model_data$store10item02=model_data$sales[model_data$level=='store10item02']
+model_data$store01item03=model_data$sales[model_data$level=='store01item03']
+model_data$store02item03=model_data$sales[model_data$level=='store02item03']
+model_data$store03item03=model_data$sales[model_data$level=='store03item03']
+model_data$store04item03=model_data$sales[model_data$level=='store04item03']
+model_data$store05item03=model_data$sales[model_data$level=='store05item03']
+model_data$store06item03=model_data$sales[model_data$level=='store06item03']
+model_data$store07item03=model_data$sales[model_data$level=='store07item03']
+model_data$store08item03=model_data$sales[model_data$level=='store08item03']
+model_data$store09item03=model_data$sales[model_data$level=='store09item03']
+model_data$store10item03=model_data$sales[model_data$level=='store10item03']
+model_data$store01item04=model_data$sales[model_data$level=='store01item04']
+model_data$store02item04=model_data$sales[model_data$level=='store02item04']
+model_data$store03item04=model_data$sales[model_data$level=='store03item04']
+model_data$store04item04=model_data$sales[model_data$level=='store04item04']
+model_data$store05item04=model_data$sales[model_data$level=='store05item04']
+model_data$store06item04=model_data$sales[model_data$level=='store06item04']
+model_data$store07item04=model_data$sales[model_data$level=='store07item04']
+model_data$store08item04=model_data$sales[model_data$level=='store08item04']
+model_data$store09item04=model_data$sales[model_data$level=='store09item04']
+model_data$store10item04=model_data$sales[model_data$level=='store10item04']
+model_data$store01item05=model_data$sales[model_data$level=='store01item05']
+model_data$store02item05=model_data$sales[model_data$level=='store02item05']
+model_data$store03item05=model_data$sales[model_data$level=='store03item05']
+model_data$store04item05=model_data$sales[model_data$level=='store04item05']
+model_data$store05item05=model_data$sales[model_data$level=='store05item05']
+model_data$store06item05=model_data$sales[model_data$level=='store06item05']
+model_data$store07item05=model_data$sales[model_data$level=='store07item05']
+model_data$store08item05=model_data$sales[model_data$level=='store08item05']
+model_data$store09item05=model_data$sales[model_data$level=='store09item05']
+model_data$store10item05=model_data$sales[model_data$level=='store10item05']
+model_data$store01item06=model_data$sales[model_data$level=='store01item06']
+model_data$store02item06=model_data$sales[model_data$level=='store02item06']
+model_data$store03item06=model_data$sales[model_data$level=='store03item06']
+model_data$store04item06=model_data$sales[model_data$level=='store04item06']
+model_data$store05item06=model_data$sales[model_data$level=='store05item06']
+model_data$store06item06=model_data$sales[model_data$level=='store06item06']
+model_data$store07item06=model_data$sales[model_data$level=='store07item06']
+model_data$store08item06=model_data$sales[model_data$level=='store08item06']
+model_data$store09item06=model_data$sales[model_data$level=='store09item06']
+model_data$store10item06=model_data$sales[model_data$level=='store10item06']
+model_data$store01item07=model_data$sales[model_data$level=='store01item07']
+model_data$store02item07=model_data$sales[model_data$level=='store02item07']
+model_data$store03item07=model_data$sales[model_data$level=='store03item07']
+model_data$store04item07=model_data$sales[model_data$level=='store04item07']
+model_data$store05item07=model_data$sales[model_data$level=='store05item07']
+model_data$store06item07=model_data$sales[model_data$level=='store06item07']
+model_data$store07item07=model_data$sales[model_data$level=='store07item07']
+model_data$store08item07=model_data$sales[model_data$level=='store08item07']
+model_data$store09item07=model_data$sales[model_data$level=='store09item07']
+model_data$store10item07=model_data$sales[model_data$level=='store10item07']
+model_data$store01item08=model_data$sales[model_data$level=='store01item08']
+model_data$store02item08=model_data$sales[model_data$level=='store02item08']
+model_data$store03item08=model_data$sales[model_data$level=='store03item08']
+model_data$store04item08=model_data$sales[model_data$level=='store04item08']
+model_data$store05item08=model_data$sales[model_data$level=='store05item08']
+model_data$store06item08=model_data$sales[model_data$level=='store06item08']
+model_data$store07item08=model_data$sales[model_data$level=='store07item08']
+model_data$store08item08=model_data$sales[model_data$level=='store08item08']
+model_data$store09item08=model_data$sales[model_data$level=='store09item08']
+model_data$store10item08=model_data$sales[model_data$level=='store10item08']
+model_data$store01item09=model_data$sales[model_data$level=='store01item09']
+model_data$store02item09=model_data$sales[model_data$level=='store02item09']
+model_data$store03item09=model_data$sales[model_data$level=='store03item09']
+model_data$store04item09=model_data$sales[model_data$level=='store04item09']
+model_data$store05item09=model_data$sales[model_data$level=='store05item09']
+model_data$store06item09=model_data$sales[model_data$level=='store06item09']
+model_data$store07item09=model_data$sales[model_data$level=='store07item09']
+model_data$store08item09=model_data$sales[model_data$level=='store08item09']
+model_data$store09item09=model_data$sales[model_data$level=='store09item09']
+model_data$store10item09=model_data$sales[model_data$level=='store10item09']
+model_data$store01item10=model_data$sales[model_data$level=='store01item10']
+model_data$store02item10=model_data$sales[model_data$level=='store02item10']
+model_data$store03item10=model_data$sales[model_data$level=='store03item10']
+model_data$store04item10=model_data$sales[model_data$level=='store04item10']
+model_data$store05item10=model_data$sales[model_data$level=='store05item10']
+model_data$store06item10=model_data$sales[model_data$level=='store06item10']
+model_data$store07item10=model_data$sales[model_data$level=='store07item10']
+model_data$store08item10=model_data$sales[model_data$level=='store08item10']
+model_data$store09item10=model_data$sales[model_data$level=='store09item10']
+model_data$store10item10=model_data$sales[model_data$level=='store10item10']
+model_data$store01item11=model_data$sales[model_data$level=='store01item11']
+model_data$store02item11=model_data$sales[model_data$level=='store02item11']
+model_data$store03item11=model_data$sales[model_data$level=='store03item11']
+model_data$store04item11=model_data$sales[model_data$level=='store04item11']
+model_data$store05item11=model_data$sales[model_data$level=='store05item11']
+model_data$store06item11=model_data$sales[model_data$level=='store06item11']
+model_data$store07item11=model_data$sales[model_data$level=='store07item11']
+model_data$store08item11=model_data$sales[model_data$level=='store08item11']
+model_data$store09item11=model_data$sales[model_data$level=='store09item11']
+model_data$store10item11=model_data$sales[model_data$level=='store10item11']
+model_data$store01item12=model_data$sales[model_data$level=='store01item12']
+model_data$store02item12=model_data$sales[model_data$level=='store02item12']
+model_data$store03item12=model_data$sales[model_data$level=='store03item12']
+model_data$store04item12=model_data$sales[model_data$level=='store04item12']
+model_data$store05item12=model_data$sales[model_data$level=='store05item12']
+model_data$store06item12=model_data$sales[model_data$level=='store06item12']
+model_data$store07item12=model_data$sales[model_data$level=='store07item12']
+model_data$store08item12=model_data$sales[model_data$level=='store08item12']
+model_data$store09item12=model_data$sales[model_data$level=='store09item12']
+model_data$store10item12=model_data$sales[model_data$level=='store10item12']
+model_data$store01item13=model_data$sales[model_data$level=='store01item13']
+model_data$store02item13=model_data$sales[model_data$level=='store02item13']
+model_data$store03item13=model_data$sales[model_data$level=='store03item13']
+model_data$store04item13=model_data$sales[model_data$level=='store04item13']
+model_data$store05item13=model_data$sales[model_data$level=='store05item13']
+model_data$store06item13=model_data$sales[model_data$level=='store06item13']
+model_data$store07item13=model_data$sales[model_data$level=='store07item13']
+model_data$store08item13=model_data$sales[model_data$level=='store08item13']
+model_data$store09item13=model_data$sales[model_data$level=='store09item13']
+model_data$store10item13=model_data$sales[model_data$level=='store10item13']
+model_data$store01item14=model_data$sales[model_data$level=='store01item14']
+model_data$store02item14=model_data$sales[model_data$level=='store02item14']
+model_data$store03item14=model_data$sales[model_data$level=='store03item14']
+model_data$store04item14=model_data$sales[model_data$level=='store04item14']
+model_data$store05item14=model_data$sales[model_data$level=='store05item14']
+model_data$store06item14=model_data$sales[model_data$level=='store06item14']
+model_data$store07item14=model_data$sales[model_data$level=='store07item14']
+model_data$store08item14=model_data$sales[model_data$level=='store08item14']
+model_data$store09item14=model_data$sales[model_data$level=='store09item14']
+model_data$store10item14=model_data$sales[model_data$level=='store10item14']
+model_data$store01item15=model_data$sales[model_data$level=='store01item15']
+model_data$store02item15=model_data$sales[model_data$level=='store02item15']
+model_data$store03item15=model_data$sales[model_data$level=='store03item15']
+model_data$store04item15=model_data$sales[model_data$level=='store04item15']
+model_data$store05item15=model_data$sales[model_data$level=='store05item15']
+model_data$store06item15=model_data$sales[model_data$level=='store06item15']
+model_data$store07item15=model_data$sales[model_data$level=='store07item15']
+model_data$store08item15=model_data$sales[model_data$level=='store08item15']
+model_data$store09item15=model_data$sales[model_data$level=='store09item15']
+model_data$store10item15=model_data$sales[model_data$level=='store10item15']
+model_data$store01item16=model_data$sales[model_data$level=='store01item16']
+model_data$store02item16=model_data$sales[model_data$level=='store02item16']
+model_data$store03item16=model_data$sales[model_data$level=='store03item16']
+model_data$store04item16=model_data$sales[model_data$level=='store04item16']
+model_data$store05item16=model_data$sales[model_data$level=='store05item16']
+model_data$store06item16=model_data$sales[model_data$level=='store06item16']
+model_data$store07item16=model_data$sales[model_data$level=='store07item16']
+model_data$store08item16=model_data$sales[model_data$level=='store08item16']
+model_data$store09item16=model_data$sales[model_data$level=='store09item16']
+model_data$store10item16=model_data$sales[model_data$level=='store10item16']
+model_data$store01item17=model_data$sales[model_data$level=='store01item17']
+model_data$store02item17=model_data$sales[model_data$level=='store02item17']
+model_data$store03item17=model_data$sales[model_data$level=='store03item17']
+model_data$store04item17=model_data$sales[model_data$level=='store04item17']
+model_data$store05item17=model_data$sales[model_data$level=='store05item17']
+model_data$store06item17=model_data$sales[model_data$level=='store06item17']
+model_data$store07item17=model_data$sales[model_data$level=='store07item17']
+model_data$store08item17=model_data$sales[model_data$level=='store08item17']
+model_data$store09item17=model_data$sales[model_data$level=='store09item17']
+model_data$store10item17=model_data$sales[model_data$level=='store10item17']
+model_data$store01item18=model_data$sales[model_data$level=='store01item18']
+model_data$store02item18=model_data$sales[model_data$level=='store02item18']
+model_data$store03item18=model_data$sales[model_data$level=='store03item18']
+model_data$store04item18=model_data$sales[model_data$level=='store04item18']
+model_data$store05item18=model_data$sales[model_data$level=='store05item18']
+model_data$store06item18=model_data$sales[model_data$level=='store06item18']
+model_data$store07item18=model_data$sales[model_data$level=='store07item18']
+model_data$store08item18=model_data$sales[model_data$level=='store08item18']
+model_data$store09item18=model_data$sales[model_data$level=='store09item18']
+model_data$store10item18=model_data$sales[model_data$level=='store10item18']
+model_data$store01item19=model_data$sales[model_data$level=='store01item19']
+model_data$store02item19=model_data$sales[model_data$level=='store02item19']
+model_data$store03item19=model_data$sales[model_data$level=='store03item19']
+model_data$store04item19=model_data$sales[model_data$level=='store04item19']
+model_data$store05item19=model_data$sales[model_data$level=='store05item19']
+model_data$store06item19=model_data$sales[model_data$level=='store06item19']
+model_data$store07item19=model_data$sales[model_data$level=='store07item19']
+model_data$store08item19=model_data$sales[model_data$level=='store08item19']
+model_data$store09item19=model_data$sales[model_data$level=='store09item19']
+model_data$store10item19=model_data$sales[model_data$level=='store10item19']
+model_data$store01item20=model_data$sales[model_data$level=='store01item20']
+model_data$store02item20=model_data$sales[model_data$level=='store02item20']
+model_data$store03item20=model_data$sales[model_data$level=='store03item20']
+model_data$store04item20=model_data$sales[model_data$level=='store04item20']
+model_data$store05item20=model_data$sales[model_data$level=='store05item20']
+model_data$store06item20=model_data$sales[model_data$level=='store06item20']
+model_data$store07item20=model_data$sales[model_data$level=='store07item20']
+model_data$store08item20=model_data$sales[model_data$level=='store08item20']
+model_data$store09item20=model_data$sales[model_data$level=='store09item20']
+model_data$store10item20=model_data$sales[model_data$level=='store10item20']
+model_data$store01item21=model_data$sales[model_data$level=='store01item21']
+model_data$store02item21=model_data$sales[model_data$level=='store02item21']
+model_data$store03item21=model_data$sales[model_data$level=='store03item21']
+model_data$store04item21=model_data$sales[model_data$level=='store04item21']
+model_data$store05item21=model_data$sales[model_data$level=='store05item21']
+model_data$store06item21=model_data$sales[model_data$level=='store06item21']
+model_data$store07item21=model_data$sales[model_data$level=='store07item21']
+model_data$store08item21=model_data$sales[model_data$level=='store08item21']
+model_data$store09item21=model_data$sales[model_data$level=='store09item21']
+model_data$store10item21=model_data$sales[model_data$level=='store10item21']
+model_data$store01item22=model_data$sales[model_data$level=='store01item22']
+model_data$store02item22=model_data$sales[model_data$level=='store02item22']
+model_data$store03item22=model_data$sales[model_data$level=='store03item22']
+model_data$store04item22=model_data$sales[model_data$level=='store04item22']
+model_data$store05item22=model_data$sales[model_data$level=='store05item22']
+model_data$store06item22=model_data$sales[model_data$level=='store06item22']
+model_data$store07item22=model_data$sales[model_data$level=='store07item22']
+model_data$store08item22=model_data$sales[model_data$level=='store08item22']
+model_data$store09item22=model_data$sales[model_data$level=='store09item22']
+model_data$store10item22=model_data$sales[model_data$level=='store10item22']
+model_data$store01item23=model_data$sales[model_data$level=='store01item23']
+model_data$store02item23=model_data$sales[model_data$level=='store02item23']
+model_data$store03item23=model_data$sales[model_data$level=='store03item23']
+model_data$store04item23=model_data$sales[model_data$level=='store04item23']
+model_data$store05item23=model_data$sales[model_data$level=='store05item23']
+model_data$store06item23=model_data$sales[model_data$level=='store06item23']
+model_data$store07item23=model_data$sales[model_data$level=='store07item23']
+model_data$store08item23=model_data$sales[model_data$level=='store08item23']
+model_data$store09item23=model_data$sales[model_data$level=='store09item23']
+model_data$store10item23=model_data$sales[model_data$level=='store10item23']
+model_data$store01item24=model_data$sales[model_data$level=='store01item24']
+model_data$store02item24=model_data$sales[model_data$level=='store02item24']
+model_data$store03item24=model_data$sales[model_data$level=='store03item24']
+model_data$store04item24=model_data$sales[model_data$level=='store04item24']
+model_data$store05item24=model_data$sales[model_data$level=='store05item24']
+model_data$store06item24=model_data$sales[model_data$level=='store06item24']
+model_data$store07item24=model_data$sales[model_data$level=='store07item24']
+model_data$store08item24=model_data$sales[model_data$level=='store08item24']
+model_data$store09item24=model_data$sales[model_data$level=='store09item24']
+model_data$store10item24=model_data$sales[model_data$level=='store10item24']
+model_data$store01item25=model_data$sales[model_data$level=='store01item25']
+model_data$store02item25=model_data$sales[model_data$level=='store02item25']
+model_data$store03item25=model_data$sales[model_data$level=='store03item25']
+model_data$store04item25=model_data$sales[model_data$level=='store04item25']
+model_data$store05item25=model_data$sales[model_data$level=='store05item25']
+model_data$store06item25=model_data$sales[model_data$level=='store06item25']
+model_data$store07item25=model_data$sales[model_data$level=='store07item25']
+model_data$store08item25=model_data$sales[model_data$level=='store08item25']
+model_data$store09item25=model_data$sales[model_data$level=='store09item25']
+model_data$store10item25=model_data$sales[model_data$level=='store10item25']
+model_data$store01item26=model_data$sales[model_data$level=='store01item26']
+model_data$store02item26=model_data$sales[model_data$level=='store02item26']
+model_data$store03item26=model_data$sales[model_data$level=='store03item26']
+model_data$store04item26=model_data$sales[model_data$level=='store04item26']
+model_data$store05item26=model_data$sales[model_data$level=='store05item26']
+model_data$store06item26=model_data$sales[model_data$level=='store06item26']
+model_data$store07item26=model_data$sales[model_data$level=='store07item26']
+model_data$store08item26=model_data$sales[model_data$level=='store08item26']
+model_data$store09item26=model_data$sales[model_data$level=='store09item26']
+model_data$store10item26=model_data$sales[model_data$level=='store10item26']
+model_data$store01item27=model_data$sales[model_data$level=='store01item27']
+model_data$store02item27=model_data$sales[model_data$level=='store02item27']
+model_data$store03item27=model_data$sales[model_data$level=='store03item27']
+model_data$store04item27=model_data$sales[model_data$level=='store04item27']
+model_data$store05item27=model_data$sales[model_data$level=='store05item27']
+model_data$store06item27=model_data$sales[model_data$level=='store06item27']
+model_data$store07item27=model_data$sales[model_data$level=='store07item27']
+model_data$store08item27=model_data$sales[model_data$level=='store08item27']
+model_data$store09item27=model_data$sales[model_data$level=='store09item27']
+model_data$store10item27=model_data$sales[model_data$level=='store10item27']
+model_data$store01item28=model_data$sales[model_data$level=='store01item28']
+model_data$store02item28=model_data$sales[model_data$level=='store02item28']
+model_data$store03item28=model_data$sales[model_data$level=='store03item28']
+model_data$store04item28=model_data$sales[model_data$level=='store04item28']
+model_data$store05item28=model_data$sales[model_data$level=='store05item28']
+model_data$store06item28=model_data$sales[model_data$level=='store06item28']
+model_data$store07item28=model_data$sales[model_data$level=='store07item28']
+model_data$store08item28=model_data$sales[model_data$level=='store08item28']
+model_data$store09item28=model_data$sales[model_data$level=='store09item28']
+model_data$store10item28=model_data$sales[model_data$level=='store10item28']
+model_data$store01item29=model_data$sales[model_data$level=='store01item29']
+model_data$store02item29=model_data$sales[model_data$level=='store02item29']
+model_data$store03item29=model_data$sales[model_data$level=='store03item29']
+model_data$store04item29=model_data$sales[model_data$level=='store04item29']
+model_data$store05item29=model_data$sales[model_data$level=='store05item29']
+model_data$store06item29=model_data$sales[model_data$level=='store06item29']
+model_data$store07item29=model_data$sales[model_data$level=='store07item29']
+model_data$store08item29=model_data$sales[model_data$level=='store08item29']
+model_data$store09item29=model_data$sales[model_data$level=='store09item29']
+model_data$store10item29=model_data$sales[model_data$level=='store10item29']
+model_data$store01item30=model_data$sales[model_data$level=='store01item30']
+model_data$store02item30=model_data$sales[model_data$level=='store02item30']
+model_data$store03item30=model_data$sales[model_data$level=='store03item30']
+model_data$store04item30=model_data$sales[model_data$level=='store04item30']
+model_data$store05item30=model_data$sales[model_data$level=='store05item30']
+model_data$store06item30=model_data$sales[model_data$level=='store06item30']
+model_data$store07item30=model_data$sales[model_data$level=='store07item30']
+model_data$store08item30=model_data$sales[model_data$level=='store08item30']
+model_data$store09item30=model_data$sales[model_data$level=='store09item30']
+model_data$store10item30=model_data$sales[model_data$level=='store10item30']
+model_data$store01item31=model_data$sales[model_data$level=='store01item31']
+model_data$store02item31=model_data$sales[model_data$level=='store02item31']
+model_data$store03item31=model_data$sales[model_data$level=='store03item31']
+model_data$store04item31=model_data$sales[model_data$level=='store04item31']
+model_data$store05item31=model_data$sales[model_data$level=='store05item31']
+model_data$store06item31=model_data$sales[model_data$level=='store06item31']
+model_data$store07item31=model_data$sales[model_data$level=='store07item31']
+model_data$store08item31=model_data$sales[model_data$level=='store08item31']
+model_data$store09item31=model_data$sales[model_data$level=='store09item31']
+model_data$store10item31=model_data$sales[model_data$level=='store10item31']
+model_data$store01item32=model_data$sales[model_data$level=='store01item32']
+model_data$store02item32=model_data$sales[model_data$level=='store02item32']
+model_data$store03item32=model_data$sales[model_data$level=='store03item32']
+model_data$store04item32=model_data$sales[model_data$level=='store04item32']
+model_data$store05item32=model_data$sales[model_data$level=='store05item32']
+model_data$store06item32=model_data$sales[model_data$level=='store06item32']
+model_data$store07item32=model_data$sales[model_data$level=='store07item32']
+model_data$store08item32=model_data$sales[model_data$level=='store08item32']
+model_data$store09item32=model_data$sales[model_data$level=='store09item32']
+model_data$store10item32=model_data$sales[model_data$level=='store10item32']
+model_data$store01item33=model_data$sales[model_data$level=='store01item33']
+model_data$store02item33=model_data$sales[model_data$level=='store02item33']
+model_data$store03item33=model_data$sales[model_data$level=='store03item33']
+model_data$store04item33=model_data$sales[model_data$level=='store04item33']
+model_data$store05item33=model_data$sales[model_data$level=='store05item33']
+model_data$store06item33=model_data$sales[model_data$level=='store06item33']
+model_data$store07item33=model_data$sales[model_data$level=='store07item33']
+model_data$store08item33=model_data$sales[model_data$level=='store08item33']
+model_data$store09item33=model_data$sales[model_data$level=='store09item33']
+model_data$store10item33=model_data$sales[model_data$level=='store10item33']
+model_data$store01item34=model_data$sales[model_data$level=='store01item34']
+model_data$store02item34=model_data$sales[model_data$level=='store02item34']
+model_data$store03item34=model_data$sales[model_data$level=='store03item34']
+model_data$store04item34=model_data$sales[model_data$level=='store04item34']
+model_data$store05item34=model_data$sales[model_data$level=='store05item34']
+model_data$store06item34=model_data$sales[model_data$level=='store06item34']
+model_data$store07item34=model_data$sales[model_data$level=='store07item34']
+model_data$store08item34=model_data$sales[model_data$level=='store08item34']
+model_data$store09item34=model_data$sales[model_data$level=='store09item34']
+model_data$store10item34=model_data$sales[model_data$level=='store10item34']
+model_data$store01item35=model_data$sales[model_data$level=='store01item35']
+model_data$store02item35=model_data$sales[model_data$level=='store02item35']
+model_data$store03item35=model_data$sales[model_data$level=='store03item35']
+model_data$store04item35=model_data$sales[model_data$level=='store04item35']
+model_data$store05item35=model_data$sales[model_data$level=='store05item35']
+model_data$store06item35=model_data$sales[model_data$level=='store06item35']
+model_data$store07item35=model_data$sales[model_data$level=='store07item35']
+model_data$store08item35=model_data$sales[model_data$level=='store08item35']
+model_data$store09item35=model_data$sales[model_data$level=='store09item35']
+model_data$store10item35=model_data$sales[model_data$level=='store10item35']
+model_data$store01item36=model_data$sales[model_data$level=='store01item36']
+model_data$store02item36=model_data$sales[model_data$level=='store02item36']
+model_data$store03item36=model_data$sales[model_data$level=='store03item36']
+model_data$store04item36=model_data$sales[model_data$level=='store04item36']
+model_data$store05item36=model_data$sales[model_data$level=='store05item36']
+model_data$store06item36=model_data$sales[model_data$level=='store06item36']
+model_data$store07item36=model_data$sales[model_data$level=='store07item36']
+model_data$store08item36=model_data$sales[model_data$level=='store08item36']
+model_data$store09item36=model_data$sales[model_data$level=='store09item36']
+model_data$store10item36=model_data$sales[model_data$level=='store10item36']
+model_data$store01item37=model_data$sales[model_data$level=='store01item37']
+model_data$store02item37=model_data$sales[model_data$level=='store02item37']
+model_data$store03item37=model_data$sales[model_data$level=='store03item37']
+model_data$store04item37=model_data$sales[model_data$level=='store04item37']
+model_data$store05item37=model_data$sales[model_data$level=='store05item37']
+model_data$store06item37=model_data$sales[model_data$level=='store06item37']
+model_data$store07item37=model_data$sales[model_data$level=='store07item37']
+model_data$store08item37=model_data$sales[model_data$level=='store08item37']
+model_data$store09item37=model_data$sales[model_data$level=='store09item37']
+model_data$store10item37=model_data$sales[model_data$level=='store10item37']
+model_data$store01item38=model_data$sales[model_data$level=='store01item38']
+model_data$store02item38=model_data$sales[model_data$level=='store02item38']
+model_data$store03item38=model_data$sales[model_data$level=='store03item38']
+model_data$store04item38=model_data$sales[model_data$level=='store04item38']
+model_data$store05item38=model_data$sales[model_data$level=='store05item38']
+model_data$store06item38=model_data$sales[model_data$level=='store06item38']
+model_data$store07item38=model_data$sales[model_data$level=='store07item38']
+model_data$store08item38=model_data$sales[model_data$level=='store08item38']
+model_data$store09item38=model_data$sales[model_data$level=='store09item38']
+model_data$store10item38=model_data$sales[model_data$level=='store10item38']
+model_data$store01item39=model_data$sales[model_data$level=='store01item39']
+model_data$store02item39=model_data$sales[model_data$level=='store02item39']
+model_data$store03item39=model_data$sales[model_data$level=='store03item39']
+model_data$store04item39=model_data$sales[model_data$level=='store04item39']
+model_data$store05item39=model_data$sales[model_data$level=='store05item39']
+model_data$store06item39=model_data$sales[model_data$level=='store06item39']
+model_data$store07item39=model_data$sales[model_data$level=='store07item39']
+model_data$store08item39=model_data$sales[model_data$level=='store08item39']
+model_data$store09item39=model_data$sales[model_data$level=='store09item39']
+model_data$store10item39=model_data$sales[model_data$level=='store10item39']
+model_data$store01item40=model_data$sales[model_data$level=='store01item40']
+model_data$store02item40=model_data$sales[model_data$level=='store02item40']
+model_data$store03item40=model_data$sales[model_data$level=='store03item40']
+model_data$store04item40=model_data$sales[model_data$level=='store04item40']
+model_data$store05item40=model_data$sales[model_data$level=='store05item40']
+model_data$store06item40=model_data$sales[model_data$level=='store06item40']
+model_data$store07item40=model_data$sales[model_data$level=='store07item40']
+model_data$store08item40=model_data$sales[model_data$level=='store08item40']
+model_data$store09item40=model_data$sales[model_data$level=='store09item40']
+model_data$store10item40=model_data$sales[model_data$level=='store10item40']
+model_data$store01item41=model_data$sales[model_data$level=='store01item41']
+model_data$store02item41=model_data$sales[model_data$level=='store02item41']
+model_data$store03item41=model_data$sales[model_data$level=='store03item41']
+model_data$store04item41=model_data$sales[model_data$level=='store04item41']
+model_data$store05item41=model_data$sales[model_data$level=='store05item41']
+model_data$store06item41=model_data$sales[model_data$level=='store06item41']
+model_data$store07item41=model_data$sales[model_data$level=='store07item41']
+model_data$store08item41=model_data$sales[model_data$level=='store08item41']
+model_data$store09item41=model_data$sales[model_data$level=='store09item41']
+model_data$store10item41=model_data$sales[model_data$level=='store10item41']
+model_data$store01item42=model_data$sales[model_data$level=='store01item42']
+model_data$store02item42=model_data$sales[model_data$level=='store02item42']
+model_data$store03item42=model_data$sales[model_data$level=='store03item42']
+model_data$store04item42=model_data$sales[model_data$level=='store04item42']
+model_data$store05item42=model_data$sales[model_data$level=='store05item42']
+model_data$store06item42=model_data$sales[model_data$level=='store06item42']
+model_data$store07item42=model_data$sales[model_data$level=='store07item42']
+model_data$store08item42=model_data$sales[model_data$level=='store08item42']
+model_data$store09item42=model_data$sales[model_data$level=='store09item42']
+model_data$store10item42=model_data$sales[model_data$level=='store10item42']
+model_data$store01item43=model_data$sales[model_data$level=='store01item43']
+model_data$store02item43=model_data$sales[model_data$level=='store02item43']
+model_data$store03item43=model_data$sales[model_data$level=='store03item43']
+model_data$store04item43=model_data$sales[model_data$level=='store04item43']
+model_data$store05item43=model_data$sales[model_data$level=='store05item43']
+model_data$store06item43=model_data$sales[model_data$level=='store06item43']
+model_data$store07item43=model_data$sales[model_data$level=='store07item43']
+model_data$store08item43=model_data$sales[model_data$level=='store08item43']
+model_data$store09item43=model_data$sales[model_data$level=='store09item43']
+model_data$store10item43=model_data$sales[model_data$level=='store10item43']
+model_data$store01item44=model_data$sales[model_data$level=='store01item44']
+model_data$store02item44=model_data$sales[model_data$level=='store02item44']
+model_data$store03item44=model_data$sales[model_data$level=='store03item44']
+model_data$store04item44=model_data$sales[model_data$level=='store04item44']
+model_data$store05item44=model_data$sales[model_data$level=='store05item44']
+model_data$store06item44=model_data$sales[model_data$level=='store06item44']
+model_data$store07item44=model_data$sales[model_data$level=='store07item44']
+model_data$store08item44=model_data$sales[model_data$level=='store08item44']
+model_data$store09item44=model_data$sales[model_data$level=='store09item44']
+model_data$store10item44=model_data$sales[model_data$level=='store10item44']
+model_data$store01item45=model_data$sales[model_data$level=='store01item45']
+model_data$store02item45=model_data$sales[model_data$level=='store02item45']
+model_data$store03item45=model_data$sales[model_data$level=='store03item45']
+model_data$store04item45=model_data$sales[model_data$level=='store04item45']
+model_data$store05item45=model_data$sales[model_data$level=='store05item45']
+model_data$store06item45=model_data$sales[model_data$level=='store06item45']
+model_data$store07item45=model_data$sales[model_data$level=='store07item45']
+model_data$store08item45=model_data$sales[model_data$level=='store08item45']
+model_data$store09item45=model_data$sales[model_data$level=='store09item45']
+model_data$store10item45=model_data$sales[model_data$level=='store10item45']
+model_data$store01item46=model_data$sales[model_data$level=='store01item46']
+model_data$store02item46=model_data$sales[model_data$level=='store02item46']
+model_data$store03item46=model_data$sales[model_data$level=='store03item46']
+model_data$store04item46=model_data$sales[model_data$level=='store04item46']
+model_data$store05item46=model_data$sales[model_data$level=='store05item46']
+model_data$store06item46=model_data$sales[model_data$level=='store06item46']
+model_data$store07item46=model_data$sales[model_data$level=='store07item46']
+model_data$store08item46=model_data$sales[model_data$level=='store08item46']
+model_data$store09item46=model_data$sales[model_data$level=='store09item46']
+model_data$store10item46=model_data$sales[model_data$level=='store10item46']
+model_data$store01item47=model_data$sales[model_data$level=='store01item47']
+model_data$store02item47=model_data$sales[model_data$level=='store02item47']
+model_data$store03item47=model_data$sales[model_data$level=='store03item47']
+model_data$store04item47=model_data$sales[model_data$level=='store04item47']
+model_data$store05item47=model_data$sales[model_data$level=='store05item47']
+model_data$store06item47=model_data$sales[model_data$level=='store06item47']
+model_data$store07item47=model_data$sales[model_data$level=='store07item47']
+model_data$store08item47=model_data$sales[model_data$level=='store08item47']
+model_data$store09item47=model_data$sales[model_data$level=='store09item47']
+model_data$store10item47=model_data$sales[model_data$level=='store10item47']
+model_data$store01item48=model_data$sales[model_data$level=='store01item48']
+model_data$store02item48=model_data$sales[model_data$level=='store02item48']
+model_data$store03item48=model_data$sales[model_data$level=='store03item48']
+model_data$store04item48=model_data$sales[model_data$level=='store04item48']
+model_data$store05item48=model_data$sales[model_data$level=='store05item48']
+model_data$store06item48=model_data$sales[model_data$level=='store06item48']
+model_data$store07item48=model_data$sales[model_data$level=='store07item48']
+model_data$store08item48=model_data$sales[model_data$level=='store08item48']
+model_data$store09item48=model_data$sales[model_data$level=='store09item48']
+model_data$store10item48=model_data$sales[model_data$level=='store10item48']
+model_data$store01item49=model_data$sales[model_data$level=='store01item49']
+model_data$store02item49=model_data$sales[model_data$level=='store02item49']
+model_data$store03item49=model_data$sales[model_data$level=='store03item49']
+model_data$store04item49=model_data$sales[model_data$level=='store04item49']
+model_data$store05item49=model_data$sales[model_data$level=='store05item49']
+model_data$store06item49=model_data$sales[model_data$level=='store06item49']
+model_data$store07item49=model_data$sales[model_data$level=='store07item49']
+model_data$store08item49=model_data$sales[model_data$level=='store08item49']
+model_data$store09item49=model_data$sales[model_data$level=='store09item49']
+model_data$store10item49=model_data$sales[model_data$level=='store10item49']
+model_data$store01item50=model_data$sales[model_data$level=='store01item50']
+model_data$store02item50=model_data$sales[model_data$level=='store02item50']
+model_data$store03item50=model_data$sales[model_data$level=='store03item50']
+model_data$store04item50=model_data$sales[model_data$level=='store04item50']
+model_data$store05item50=model_data$sales[model_data$level=='store05item50']
+model_data$store06item50=model_data$sales[model_data$level=='store06item50']
+model_data$store07item50=model_data$sales[model_data$level=='store07item50']
+model_data$store08item50=model_data$sales[model_data$level=='store08item50']
+model_data$store09item50=model_data$sales[model_data$level=='store09item50']
+model_data$store10item50=model_data$sales[model_data$level=='store10item50']
+
+#resume normal code
+str(model_data)
+model_data=model_data[1:1825,] # 365 days x 5 years from 1/1/2013 to 12/31/2017
+str(model_data)
+model_data=model_data[,4:503]
+str(model_data)
+head(model_data)
+tail(model_data)
+tdata=ts(model_data,start=c(2013,1,1),end=c(2017,12,31),frequency=365)
+str(tdata)
+tdata=hts(tdata,characters=c(7,6))
+str(tdata)
+tdata %>% aggts(levels=0:1) %>% autoplot(facet=TRUE)
+plot(tdata,levels=1,xlim=c(2013,2017))
+plot(tdata,levels=2,xlim=c(2013,2017))
+plot(tdata,levels=c(0,2),xlim=c(2013,2017))
+
+# R can't handle all this much data and given 
+# and given that from plot above, all years seem to have similar pattern
+# will limit data to only 1 year to predict
+str(model_data)
+model_data17=model_data[1461:1825,] # get only 2017 data
+str(model_data17)
+tdata=ts(model_data17,start=c(2017,1,1),end=c(2017,12,31),frequency=365)
+str(tdata)
+tdata=hts(tdata,characters=c(7,6))
+str(tdata)
+#ARIMA model
+fc1=forecast(tdata, h=90, method="tdfp", fmethod="arima", keep.fitted=TRUE, keep.resid=TRUE)
+fca1=aggts(fc1, levels=c(0, 2))
+#ETS model
+fc2=forecast(tdata,method='tdfp',fmethod='ets',h=90, keep.fitted=TRUE, keep.resid=TRUE)
+fca2=aggts(fc2,levels=c(0,2))
+
+output1=as.data.frame(fca1)
+str(output1)
+head(output1)
+output1=output1[c('store01item01',
+          'store02item01',
+          'store03item01',
+          'store04item01',
+          'store05item01',
+          'store06item01',
+          'store07item01',
+          'store08item01',
+          'store09item01',
+          'store10item01',
+          'store01item02',
+          'store02item02',
+          'store03item02',
+          'store04item02',
+          'store05item02',
+          'store06item02',
+          'store07item02',
+          'store08item02',
+          'store09item02',
+          'store10item02',
+          'store01item03',
+          'store02item03',
+          'store03item03',
+          'store04item03',
+          'store05item03',
+          'store06item03',
+          'store07item03',
+          'store08item03',
+          'store09item03',
+          'store10item03',
+          'store01item04',
+          'store02item04',
+          'store03item04',
+          'store04item04',
+          'store05item04',
+          'store06item04',
+          'store07item04',
+          'store08item04',
+          'store09item04',
+          'store10item04',
+          'store01item05',
+          'store02item05',
+          'store03item05',
+          'store04item05',
+          'store05item05',
+          'store06item05',
+          'store07item05',
+          'store08item05',
+          'store09item05',
+          'store10item05',
+          'store01item06',
+          'store02item06',
+          'store03item06',
+          'store04item06',
+          'store05item06',
+          'store06item06',
+          'store07item06',
+          'store08item06',
+          'store09item06',
+          'store10item06',
+          'store01item07',
+          'store02item07',
+          'store03item07',
+          'store04item07',
+          'store05item07',
+          'store06item07',
+          'store07item07',
+          'store08item07',
+          'store09item07',
+          'store10item07',
+          'store01item08',
+          'store02item08',
+          'store03item08',
+          'store04item08',
+          'store05item08',
+          'store06item08',
+          'store07item08',
+          'store08item08',
+          'store09item08',
+          'store10item08',
+          'store01item09',
+          'store02item09',
+          'store03item09',
+          'store04item09',
+          'store05item09',
+          'store06item09',
+          'store07item09',
+          'store08item09',
+          'store09item09',
+          'store10item09',
+          'store01item10',
+          'store02item10',
+          'store03item10',
+          'store04item10',
+          'store05item10',
+          'store06item10',
+          'store07item10',
+          'store08item10',
+          'store09item10',
+          'store10item10',
+          'store01item11',
+          'store02item11',
+          'store03item11',
+          'store04item11',
+          'store05item11',
+          'store06item11',
+          'store07item11',
+          'store08item11',
+          'store09item11',
+          'store10item11',
+          'store01item12',
+          'store02item12',
+          'store03item12',
+          'store04item12',
+          'store05item12',
+          'store06item12',
+          'store07item12',
+          'store08item12',
+          'store09item12',
+          'store10item12',
+          'store01item13',
+          'store02item13',
+          'store03item13',
+          'store04item13',
+          'store05item13',
+          'store06item13',
+          'store07item13',
+          'store08item13',
+          'store09item13',
+          'store10item13',
+          'store01item14',
+          'store02item14',
+          'store03item14',
+          'store04item14',
+          'store05item14',
+          'store06item14',
+          'store07item14',
+          'store08item14',
+          'store09item14',
+          'store10item14',
+          'store01item15',
+          'store02item15',
+          'store03item15',
+          'store04item15',
+          'store05item15',
+          'store06item15',
+          'store07item15',
+          'store08item15',
+          'store09item15',
+          'store10item15',
+          'store01item16',
+          'store02item16',
+          'store03item16',
+          'store04item16',
+          'store05item16',
+          'store06item16',
+          'store07item16',
+          'store08item16',
+          'store09item16',
+          'store10item16',
+          'store01item17',
+          'store02item17',
+          'store03item17',
+          'store04item17',
+          'store05item17',
+          'store06item17',
+          'store07item17',
+          'store08item17',
+          'store09item17',
+          'store10item17',
+          'store01item18',
+          'store02item18',
+          'store03item18',
+          'store04item18',
+          'store05item18',
+          'store06item18',
+          'store07item18',
+          'store08item18',
+          'store09item18',
+          'store10item18',
+          'store01item19',
+          'store02item19',
+          'store03item19',
+          'store04item19',
+          'store05item19',
+          'store06item19',
+          'store07item19',
+          'store08item19',
+          'store09item19',
+          'store10item19',
+          'store01item20',
+          'store02item20',
+          'store03item20',
+          'store04item20',
+          'store05item20',
+          'store06item20',
+          'store07item20',
+          'store08item20',
+          'store09item20',
+          'store10item20',
+          'store01item21',
+          'store02item21',
+          'store03item21',
+          'store04item21',
+          'store05item21',
+          'store06item21',
+          'store07item21',
+          'store08item21',
+          'store09item21',
+          'store10item21',
+          'store01item22',
+          'store02item22',
+          'store03item22',
+          'store04item22',
+          'store05item22',
+          'store06item22',
+          'store07item22',
+          'store08item22',
+          'store09item22',
+          'store10item22',
+          'store01item23',
+          'store02item23',
+          'store03item23',
+          'store04item23',
+          'store05item23',
+          'store06item23',
+          'store07item23',
+          'store08item23',
+          'store09item23',
+          'store10item23',
+          'store01item24',
+          'store02item24',
+          'store03item24',
+          'store04item24',
+          'store05item24',
+          'store06item24',
+          'store07item24',
+          'store08item24',
+          'store09item24',
+          'store10item24',
+          'store01item25',
+          'store02item25',
+          'store03item25',
+          'store04item25',
+          'store05item25',
+          'store06item25',
+          'store07item25',
+          'store08item25',
+          'store09item25',
+          'store10item25',
+          'store01item26',
+          'store02item26',
+          'store03item26',
+          'store04item26',
+          'store05item26',
+          'store06item26',
+          'store07item26',
+          'store08item26',
+          'store09item26',
+          'store10item26',
+          'store01item27',
+          'store02item27',
+          'store03item27',
+          'store04item27',
+          'store05item27',
+          'store06item27',
+          'store07item27',
+          'store08item27',
+          'store09item27',
+          'store10item27',
+          'store01item28',
+          'store02item28',
+          'store03item28',
+          'store04item28',
+          'store05item28',
+          'store06item28',
+          'store07item28',
+          'store08item28',
+          'store09item28',
+          'store10item28',
+          'store01item29',
+          'store02item29',
+          'store03item29',
+          'store04item29',
+          'store05item29',
+          'store06item29',
+          'store07item29',
+          'store08item29',
+          'store09item29',
+          'store10item29',
+          'store01item30',
+          'store02item30',
+          'store03item30',
+          'store04item30',
+          'store05item30',
+          'store06item30',
+          'store07item30',
+          'store08item30',
+          'store09item30',
+          'store10item30',
+          'store01item31',
+          'store02item31',
+          'store03item31',
+          'store04item31',
+          'store05item31',
+          'store06item31',
+          'store07item31',
+          'store08item31',
+          'store09item31',
+          'store10item31',
+          'store01item32',
+          'store02item32',
+          'store03item32',
+          'store04item32',
+          'store05item32',
+          'store06item32',
+          'store07item32',
+          'store08item32',
+          'store09item32',
+          'store10item32',
+          'store01item33',
+          'store02item33',
+          'store03item33',
+          'store04item33',
+          'store05item33',
+          'store06item33',
+          'store07item33',
+          'store08item33',
+          'store09item33',
+          'store10item33',
+          'store01item34',
+          'store02item34',
+          'store03item34',
+          'store04item34',
+          'store05item34',
+          'store06item34',
+          'store07item34',
+          'store08item34',
+          'store09item34',
+          'store10item34',
+          'store01item35',
+          'store02item35',
+          'store03item35',
+          'store04item35',
+          'store05item35',
+          'store06item35',
+          'store07item35',
+          'store08item35',
+          'store09item35',
+          'store10item35',
+          'store01item36',
+          'store02item36',
+          'store03item36',
+          'store04item36',
+          'store05item36',
+          'store06item36',
+          'store07item36',
+          'store08item36',
+          'store09item36',
+          'store10item36',
+          'store01item37',
+          'store02item37',
+          'store03item37',
+          'store04item37',
+          'store05item37',
+          'store06item37',
+          'store07item37',
+          'store08item37',
+          'store09item37',
+          'store10item37',
+          'store01item38',
+          'store02item38',
+          'store03item38',
+          'store04item38',
+          'store05item38',
+          'store06item38',
+          'store07item38',
+          'store08item38',
+          'store09item38',
+          'store10item38',
+          'store01item39',
+          'store02item39',
+          'store03item39',
+          'store04item39',
+          'store05item39',
+          'store06item39',
+          'store07item39',
+          'store08item39',
+          'store09item39',
+          'store10item39',
+          'store01item40',
+          'store02item40',
+          'store03item40',
+          'store04item40',
+          'store05item40',
+          'store06item40',
+          'store07item40',
+          'store08item40',
+          'store09item40',
+          'store10item40',
+          'store01item41',
+          'store02item41',
+          'store03item41',
+          'store04item41',
+          'store05item41',
+          'store06item41',
+          'store07item41',
+          'store08item41',
+          'store09item41',
+          'store10item41',
+          'store01item42',
+          'store02item42',
+          'store03item42',
+          'store04item42',
+          'store05item42',
+          'store06item42',
+          'store07item42',
+          'store08item42',
+          'store09item42',
+          'store10item42',
+          'store01item43',
+          'store02item43',
+          'store03item43',
+          'store04item43',
+          'store05item43',
+          'store06item43',
+          'store07item43',
+          'store08item43',
+          'store09item43',
+          'store10item43',
+          'store01item44',
+          'store02item44',
+          'store03item44',
+          'store04item44',
+          'store05item44',
+          'store06item44',
+          'store07item44',
+          'store08item44',
+          'store09item44',
+          'store10item44',
+          'store01item45',
+          'store02item45',
+          'store03item45',
+          'store04item45',
+          'store05item45',
+          'store06item45',
+          'store07item45',
+          'store08item45',
+          'store09item45',
+          'store10item45',
+          'store01item46',
+          'store02item46',
+          'store03item46',
+          'store04item46',
+          'store05item46',
+          'store06item46',
+          'store07item46',
+          'store08item46',
+          'store09item46',
+          'store10item46',
+          'store01item47',
+          'store02item47',
+          'store03item47',
+          'store04item47',
+          'store05item47',
+          'store06item47',
+          'store07item47',
+          'store08item47',
+          'store09item47',
+          'store10item47',
+          'store01item48',
+          'store02item48',
+          'store03item48',
+          'store04item48',
+          'store05item48',
+          'store06item48',
+          'store07item48',
+          'store08item48',
+          'store09item48',
+          'store10item48',
+          'store01item49',
+          'store02item49',
+          'store03item49',
+          'store04item49',
+          'store05item49',
+          'store06item49',
+          'store07item49',
+          'store08item49',
+          'store09item49',
+          'store10item49',
+          'store01item50',
+          'store02item50',
+          'store03item50',
+          'store04item50',
+          'store05item50',
+          'store06item50',
+          'store07item50',
+          'store08item50',
+          'store09item50',
+          'store10item50')]
+str(output1)
+head(output1)
+output1=stack(output1)
+str(output1)
+head(output1)
+id=seq(0,44999,by=1)
+output1=cbind(id,output1$values)
+colnames(output1)=c('id','sales')
+str(output1)
+head(output1)
+
+output2=as.data.frame(fca2)
+str(output2)
+head(output2)
+output2=output2[c('store01item01',
+                  'store02item01',
+                  'store03item01',
+                  'store04item01',
+                  'store05item01',
+                  'store06item01',
+                  'store07item01',
+                  'store08item01',
+                  'store09item01',
+                  'store10item01',
+                  'store01item02',
+                  'store02item02',
+                  'store03item02',
+                  'store04item02',
+                  'store05item02',
+                  'store06item02',
+                  'store07item02',
+                  'store08item02',
+                  'store09item02',
+                  'store10item02',
+                  'store01item03',
+                  'store02item03',
+                  'store03item03',
+                  'store04item03',
+                  'store05item03',
+                  'store06item03',
+                  'store07item03',
+                  'store08item03',
+                  'store09item03',
+                  'store10item03',
+                  'store01item04',
+                  'store02item04',
+                  'store03item04',
+                  'store04item04',
+                  'store05item04',
+                  'store06item04',
+                  'store07item04',
+                  'store08item04',
+                  'store09item04',
+                  'store10item04',
+                  'store01item05',
+                  'store02item05',
+                  'store03item05',
+                  'store04item05',
+                  'store05item05',
+                  'store06item05',
+                  'store07item05',
+                  'store08item05',
+                  'store09item05',
+                  'store10item05',
+                  'store01item06',
+                  'store02item06',
+                  'store03item06',
+                  'store04item06',
+                  'store05item06',
+                  'store06item06',
+                  'store07item06',
+                  'store08item06',
+                  'store09item06',
+                  'store10item06',
+                  'store01item07',
+                  'store02item07',
+                  'store03item07',
+                  'store04item07',
+                  'store05item07',
+                  'store06item07',
+                  'store07item07',
+                  'store08item07',
+                  'store09item07',
+                  'store10item07',
+                  'store01item08',
+                  'store02item08',
+                  'store03item08',
+                  'store04item08',
+                  'store05item08',
+                  'store06item08',
+                  'store07item08',
+                  'store08item08',
+                  'store09item08',
+                  'store10item08',
+                  'store01item09',
+                  'store02item09',
+                  'store03item09',
+                  'store04item09',
+                  'store05item09',
+                  'store06item09',
+                  'store07item09',
+                  'store08item09',
+                  'store09item09',
+                  'store10item09',
+                  'store01item10',
+                  'store02item10',
+                  'store03item10',
+                  'store04item10',
+                  'store05item10',
+                  'store06item10',
+                  'store07item10',
+                  'store08item10',
+                  'store09item10',
+                  'store10item10',
+                  'store01item11',
+                  'store02item11',
+                  'store03item11',
+                  'store04item11',
+                  'store05item11',
+                  'store06item11',
+                  'store07item11',
+                  'store08item11',
+                  'store09item11',
+                  'store10item11',
+                  'store01item12',
+                  'store02item12',
+                  'store03item12',
+                  'store04item12',
+                  'store05item12',
+                  'store06item12',
+                  'store07item12',
+                  'store08item12',
+                  'store09item12',
+                  'store10item12',
+                  'store01item13',
+                  'store02item13',
+                  'store03item13',
+                  'store04item13',
+                  'store05item13',
+                  'store06item13',
+                  'store07item13',
+                  'store08item13',
+                  'store09item13',
+                  'store10item13',
+                  'store01item14',
+                  'store02item14',
+                  'store03item14',
+                  'store04item14',
+                  'store05item14',
+                  'store06item14',
+                  'store07item14',
+                  'store08item14',
+                  'store09item14',
+                  'store10item14',
+                  'store01item15',
+                  'store02item15',
+                  'store03item15',
+                  'store04item15',
+                  'store05item15',
+                  'store06item15',
+                  'store07item15',
+                  'store08item15',
+                  'store09item15',
+                  'store10item15',
+                  'store01item16',
+                  'store02item16',
+                  'store03item16',
+                  'store04item16',
+                  'store05item16',
+                  'store06item16',
+                  'store07item16',
+                  'store08item16',
+                  'store09item16',
+                  'store10item16',
+                  'store01item17',
+                  'store02item17',
+                  'store03item17',
+                  'store04item17',
+                  'store05item17',
+                  'store06item17',
+                  'store07item17',
+                  'store08item17',
+                  'store09item17',
+                  'store10item17',
+                  'store01item18',
+                  'store02item18',
+                  'store03item18',
+                  'store04item18',
+                  'store05item18',
+                  'store06item18',
+                  'store07item18',
+                  'store08item18',
+                  'store09item18',
+                  'store10item18',
+                  'store01item19',
+                  'store02item19',
+                  'store03item19',
+                  'store04item19',
+                  'store05item19',
+                  'store06item19',
+                  'store07item19',
+                  'store08item19',
+                  'store09item19',
+                  'store10item19',
+                  'store01item20',
+                  'store02item20',
+                  'store03item20',
+                  'store04item20',
+                  'store05item20',
+                  'store06item20',
+                  'store07item20',
+                  'store08item20',
+                  'store09item20',
+                  'store10item20',
+                  'store01item21',
+                  'store02item21',
+                  'store03item21',
+                  'store04item21',
+                  'store05item21',
+                  'store06item21',
+                  'store07item21',
+                  'store08item21',
+                  'store09item21',
+                  'store10item21',
+                  'store01item22',
+                  'store02item22',
+                  'store03item22',
+                  'store04item22',
+                  'store05item22',
+                  'store06item22',
+                  'store07item22',
+                  'store08item22',
+                  'store09item22',
+                  'store10item22',
+                  'store01item23',
+                  'store02item23',
+                  'store03item23',
+                  'store04item23',
+                  'store05item23',
+                  'store06item23',
+                  'store07item23',
+                  'store08item23',
+                  'store09item23',
+                  'store10item23',
+                  'store01item24',
+                  'store02item24',
+                  'store03item24',
+                  'store04item24',
+                  'store05item24',
+                  'store06item24',
+                  'store07item24',
+                  'store08item24',
+                  'store09item24',
+                  'store10item24',
+                  'store01item25',
+                  'store02item25',
+                  'store03item25',
+                  'store04item25',
+                  'store05item25',
+                  'store06item25',
+                  'store07item25',
+                  'store08item25',
+                  'store09item25',
+                  'store10item25',
+                  'store01item26',
+                  'store02item26',
+                  'store03item26',
+                  'store04item26',
+                  'store05item26',
+                  'store06item26',
+                  'store07item26',
+                  'store08item26',
+                  'store09item26',
+                  'store10item26',
+                  'store01item27',
+                  'store02item27',
+                  'store03item27',
+                  'store04item27',
+                  'store05item27',
+                  'store06item27',
+                  'store07item27',
+                  'store08item27',
+                  'store09item27',
+                  'store10item27',
+                  'store01item28',
+                  'store02item28',
+                  'store03item28',
+                  'store04item28',
+                  'store05item28',
+                  'store06item28',
+                  'store07item28',
+                  'store08item28',
+                  'store09item28',
+                  'store10item28',
+                  'store01item29',
+                  'store02item29',
+                  'store03item29',
+                  'store04item29',
+                  'store05item29',
+                  'store06item29',
+                  'store07item29',
+                  'store08item29',
+                  'store09item29',
+                  'store10item29',
+                  'store01item30',
+                  'store02item30',
+                  'store03item30',
+                  'store04item30',
+                  'store05item30',
+                  'store06item30',
+                  'store07item30',
+                  'store08item30',
+                  'store09item30',
+                  'store10item30',
+                  'store01item31',
+                  'store02item31',
+                  'store03item31',
+                  'store04item31',
+                  'store05item31',
+                  'store06item31',
+                  'store07item31',
+                  'store08item31',
+                  'store09item31',
+                  'store10item31',
+                  'store01item32',
+                  'store02item32',
+                  'store03item32',
+                  'store04item32',
+                  'store05item32',
+                  'store06item32',
+                  'store07item32',
+                  'store08item32',
+                  'store09item32',
+                  'store10item32',
+                  'store01item33',
+                  'store02item33',
+                  'store03item33',
+                  'store04item33',
+                  'store05item33',
+                  'store06item33',
+                  'store07item33',
+                  'store08item33',
+                  'store09item33',
+                  'store10item33',
+                  'store01item34',
+                  'store02item34',
+                  'store03item34',
+                  'store04item34',
+                  'store05item34',
+                  'store06item34',
+                  'store07item34',
+                  'store08item34',
+                  'store09item34',
+                  'store10item34',
+                  'store01item35',
+                  'store02item35',
+                  'store03item35',
+                  'store04item35',
+                  'store05item35',
+                  'store06item35',
+                  'store07item35',
+                  'store08item35',
+                  'store09item35',
+                  'store10item35',
+                  'store01item36',
+                  'store02item36',
+                  'store03item36',
+                  'store04item36',
+                  'store05item36',
+                  'store06item36',
+                  'store07item36',
+                  'store08item36',
+                  'store09item36',
+                  'store10item36',
+                  'store01item37',
+                  'store02item37',
+                  'store03item37',
+                  'store04item37',
+                  'store05item37',
+                  'store06item37',
+                  'store07item37',
+                  'store08item37',
+                  'store09item37',
+                  'store10item37',
+                  'store01item38',
+                  'store02item38',
+                  'store03item38',
+                  'store04item38',
+                  'store05item38',
+                  'store06item38',
+                  'store07item38',
+                  'store08item38',
+                  'store09item38',
+                  'store10item38',
+                  'store01item39',
+                  'store02item39',
+                  'store03item39',
+                  'store04item39',
+                  'store05item39',
+                  'store06item39',
+                  'store07item39',
+                  'store08item39',
+                  'store09item39',
+                  'store10item39',
+                  'store01item40',
+                  'store02item40',
+                  'store03item40',
+                  'store04item40',
+                  'store05item40',
+                  'store06item40',
+                  'store07item40',
+                  'store08item40',
+                  'store09item40',
+                  'store10item40',
+                  'store01item41',
+                  'store02item41',
+                  'store03item41',
+                  'store04item41',
+                  'store05item41',
+                  'store06item41',
+                  'store07item41',
+                  'store08item41',
+                  'store09item41',
+                  'store10item41',
+                  'store01item42',
+                  'store02item42',
+                  'store03item42',
+                  'store04item42',
+                  'store05item42',
+                  'store06item42',
+                  'store07item42',
+                  'store08item42',
+                  'store09item42',
+                  'store10item42',
+                  'store01item43',
+                  'store02item43',
+                  'store03item43',
+                  'store04item43',
+                  'store05item43',
+                  'store06item43',
+                  'store07item43',
+                  'store08item43',
+                  'store09item43',
+                  'store10item43',
+                  'store01item44',
+                  'store02item44',
+                  'store03item44',
+                  'store04item44',
+                  'store05item44',
+                  'store06item44',
+                  'store07item44',
+                  'store08item44',
+                  'store09item44',
+                  'store10item44',
+                  'store01item45',
+                  'store02item45',
+                  'store03item45',
+                  'store04item45',
+                  'store05item45',
+                  'store06item45',
+                  'store07item45',
+                  'store08item45',
+                  'store09item45',
+                  'store10item45',
+                  'store01item46',
+                  'store02item46',
+                  'store03item46',
+                  'store04item46',
+                  'store05item46',
+                  'store06item46',
+                  'store07item46',
+                  'store08item46',
+                  'store09item46',
+                  'store10item46',
+                  'store01item47',
+                  'store02item47',
+                  'store03item47',
+                  'store04item47',
+                  'store05item47',
+                  'store06item47',
+                  'store07item47',
+                  'store08item47',
+                  'store09item47',
+                  'store10item47',
+                  'store01item48',
+                  'store02item48',
+                  'store03item48',
+                  'store04item48',
+                  'store05item48',
+                  'store06item48',
+                  'store07item48',
+                  'store08item48',
+                  'store09item48',
+                  'store10item48',
+                  'store01item49',
+                  'store02item49',
+                  'store03item49',
+                  'store04item49',
+                  'store05item49',
+                  'store06item49',
+                  'store07item49',
+                  'store08item49',
+                  'store09item49',
+                  'store10item49',
+                  'store01item50',
+                  'store02item50',
+                  'store03item50',
+                  'store04item50',
+                  'store05item50',
+                  'store06item50',
+                  'store07item50',
+                  'store08item50',
+                  'store09item50',
+                  'store10item50')]
+str(output2)
+head(output2)
+output2=stack(output2)
+str(output2)
+head(output2)
+id=seq(0,44999,by=1)
+output2=cbind(id,output2$values)
+colnames(output2)=c('id','sales')
+str(output2)
+head(output2)
+
+#expand to two years (2016-2017) to develop models
+str(model_data)
+model_data16=model_data[1096:1825,] # get 2016-2017 data
+str(model_data16)
+tdata=ts(model_data16,start=c(2016,1,1),end=c(2017,12,31),frequency=365)
+str(tdata)
+tdata=hts(tdata,characters=c(7,6))
+str(tdata)
+#ARIMA model
+fc3=forecast(tdata, h=90, method="tdfp", fmethod="arima", keep.fitted=TRUE, keep.resid=TRUE)
+fca3=aggts(fc1, levels=c(0, 2))
+#ETS model
+fc4=forecast(tdata,method='tdfp',fmethod='ets',h=90, keep.fitted=TRUE, keep.resid=TRUE)
+fca4=aggts(fc2,levels=c(0,2))
+
+output3=as.data.frame(fca3)
+str(output3)
+head(output3)
+output3=output3[c('store01item01',
+                  'store02item01',
+                  'store03item01',
+                  'store04item01',
+                  'store05item01',
+                  'store06item01',
+                  'store07item01',
+                  'store08item01',
+                  'store09item01',
+                  'store10item01',
+                  'store01item02',
+                  'store02item02',
+                  'store03item02',
+                  'store04item02',
+                  'store05item02',
+                  'store06item02',
+                  'store07item02',
+                  'store08item02',
+                  'store09item02',
+                  'store10item02',
+                  'store01item03',
+                  'store02item03',
+                  'store03item03',
+                  'store04item03',
+                  'store05item03',
+                  'store06item03',
+                  'store07item03',
+                  'store08item03',
+                  'store09item03',
+                  'store10item03',
+                  'store01item04',
+                  'store02item04',
+                  'store03item04',
+                  'store04item04',
+                  'store05item04',
+                  'store06item04',
+                  'store07item04',
+                  'store08item04',
+                  'store09item04',
+                  'store10item04',
+                  'store01item05',
+                  'store02item05',
+                  'store03item05',
+                  'store04item05',
+                  'store05item05',
+                  'store06item05',
+                  'store07item05',
+                  'store08item05',
+                  'store09item05',
+                  'store10item05',
+                  'store01item06',
+                  'store02item06',
+                  'store03item06',
+                  'store04item06',
+                  'store05item06',
+                  'store06item06',
+                  'store07item06',
+                  'store08item06',
+                  'store09item06',
+                  'store10item06',
+                  'store01item07',
+                  'store02item07',
+                  'store03item07',
+                  'store04item07',
+                  'store05item07',
+                  'store06item07',
+                  'store07item07',
+                  'store08item07',
+                  'store09item07',
+                  'store10item07',
+                  'store01item08',
+                  'store02item08',
+                  'store03item08',
+                  'store04item08',
+                  'store05item08',
+                  'store06item08',
+                  'store07item08',
+                  'store08item08',
+                  'store09item08',
+                  'store10item08',
+                  'store01item09',
+                  'store02item09',
+                  'store03item09',
+                  'store04item09',
+                  'store05item09',
+                  'store06item09',
+                  'store07item09',
+                  'store08item09',
+                  'store09item09',
+                  'store10item09',
+                  'store01item10',
+                  'store02item10',
+                  'store03item10',
+                  'store04item10',
+                  'store05item10',
+                  'store06item10',
+                  'store07item10',
+                  'store08item10',
+                  'store09item10',
+                  'store10item10',
+                  'store01item11',
+                  'store02item11',
+                  'store03item11',
+                  'store04item11',
+                  'store05item11',
+                  'store06item11',
+                  'store07item11',
+                  'store08item11',
+                  'store09item11',
+                  'store10item11',
+                  'store01item12',
+                  'store02item12',
+                  'store03item12',
+                  'store04item12',
+                  'store05item12',
+                  'store06item12',
+                  'store07item12',
+                  'store08item12',
+                  'store09item12',
+                  'store10item12',
+                  'store01item13',
+                  'store02item13',
+                  'store03item13',
+                  'store04item13',
+                  'store05item13',
+                  'store06item13',
+                  'store07item13',
+                  'store08item13',
+                  'store09item13',
+                  'store10item13',
+                  'store01item14',
+                  'store02item14',
+                  'store03item14',
+                  'store04item14',
+                  'store05item14',
+                  'store06item14',
+                  'store07item14',
+                  'store08item14',
+                  'store09item14',
+                  'store10item14',
+                  'store01item15',
+                  'store02item15',
+                  'store03item15',
+                  'store04item15',
+                  'store05item15',
+                  'store06item15',
+                  'store07item15',
+                  'store08item15',
+                  'store09item15',
+                  'store10item15',
+                  'store01item16',
+                  'store02item16',
+                  'store03item16',
+                  'store04item16',
+                  'store05item16',
+                  'store06item16',
+                  'store07item16',
+                  'store08item16',
+                  'store09item16',
+                  'store10item16',
+                  'store01item17',
+                  'store02item17',
+                  'store03item17',
+                  'store04item17',
+                  'store05item17',
+                  'store06item17',
+                  'store07item17',
+                  'store08item17',
+                  'store09item17',
+                  'store10item17',
+                  'store01item18',
+                  'store02item18',
+                  'store03item18',
+                  'store04item18',
+                  'store05item18',
+                  'store06item18',
+                  'store07item18',
+                  'store08item18',
+                  'store09item18',
+                  'store10item18',
+                  'store01item19',
+                  'store02item19',
+                  'store03item19',
+                  'store04item19',
+                  'store05item19',
+                  'store06item19',
+                  'store07item19',
+                  'store08item19',
+                  'store09item19',
+                  'store10item19',
+                  'store01item20',
+                  'store02item20',
+                  'store03item20',
+                  'store04item20',
+                  'store05item20',
+                  'store06item20',
+                  'store07item20',
+                  'store08item20',
+                  'store09item20',
+                  'store10item20',
+                  'store01item21',
+                  'store02item21',
+                  'store03item21',
+                  'store04item21',
+                  'store05item21',
+                  'store06item21',
+                  'store07item21',
+                  'store08item21',
+                  'store09item21',
+                  'store10item21',
+                  'store01item22',
+                  'store02item22',
+                  'store03item22',
+                  'store04item22',
+                  'store05item22',
+                  'store06item22',
+                  'store07item22',
+                  'store08item22',
+                  'store09item22',
+                  'store10item22',
+                  'store01item23',
+                  'store02item23',
+                  'store03item23',
+                  'store04item23',
+                  'store05item23',
+                  'store06item23',
+                  'store07item23',
+                  'store08item23',
+                  'store09item23',
+                  'store10item23',
+                  'store01item24',
+                  'store02item24',
+                  'store03item24',
+                  'store04item24',
+                  'store05item24',
+                  'store06item24',
+                  'store07item24',
+                  'store08item24',
+                  'store09item24',
+                  'store10item24',
+                  'store01item25',
+                  'store02item25',
+                  'store03item25',
+                  'store04item25',
+                  'store05item25',
+                  'store06item25',
+                  'store07item25',
+                  'store08item25',
+                  'store09item25',
+                  'store10item25',
+                  'store01item26',
+                  'store02item26',
+                  'store03item26',
+                  'store04item26',
+                  'store05item26',
+                  'store06item26',
+                  'store07item26',
+                  'store08item26',
+                  'store09item26',
+                  'store10item26',
+                  'store01item27',
+                  'store02item27',
+                  'store03item27',
+                  'store04item27',
+                  'store05item27',
+                  'store06item27',
+                  'store07item27',
+                  'store08item27',
+                  'store09item27',
+                  'store10item27',
+                  'store01item28',
+                  'store02item28',
+                  'store03item28',
+                  'store04item28',
+                  'store05item28',
+                  'store06item28',
+                  'store07item28',
+                  'store08item28',
+                  'store09item28',
+                  'store10item28',
+                  'store01item29',
+                  'store02item29',
+                  'store03item29',
+                  'store04item29',
+                  'store05item29',
+                  'store06item29',
+                  'store07item29',
+                  'store08item29',
+                  'store09item29',
+                  'store10item29',
+                  'store01item30',
+                  'store02item30',
+                  'store03item30',
+                  'store04item30',
+                  'store05item30',
+                  'store06item30',
+                  'store07item30',
+                  'store08item30',
+                  'store09item30',
+                  'store10item30',
+                  'store01item31',
+                  'store02item31',
+                  'store03item31',
+                  'store04item31',
+                  'store05item31',
+                  'store06item31',
+                  'store07item31',
+                  'store08item31',
+                  'store09item31',
+                  'store10item31',
+                  'store01item32',
+                  'store02item32',
+                  'store03item32',
+                  'store04item32',
+                  'store05item32',
+                  'store06item32',
+                  'store07item32',
+                  'store08item32',
+                  'store09item32',
+                  'store10item32',
+                  'store01item33',
+                  'store02item33',
+                  'store03item33',
+                  'store04item33',
+                  'store05item33',
+                  'store06item33',
+                  'store07item33',
+                  'store08item33',
+                  'store09item33',
+                  'store10item33',
+                  'store01item34',
+                  'store02item34',
+                  'store03item34',
+                  'store04item34',
+                  'store05item34',
+                  'store06item34',
+                  'store07item34',
+                  'store08item34',
+                  'store09item34',
+                  'store10item34',
+                  'store01item35',
+                  'store02item35',
+                  'store03item35',
+                  'store04item35',
+                  'store05item35',
+                  'store06item35',
+                  'store07item35',
+                  'store08item35',
+                  'store09item35',
+                  'store10item35',
+                  'store01item36',
+                  'store02item36',
+                  'store03item36',
+                  'store04item36',
+                  'store05item36',
+                  'store06item36',
+                  'store07item36',
+                  'store08item36',
+                  'store09item36',
+                  'store10item36',
+                  'store01item37',
+                  'store02item37',
+                  'store03item37',
+                  'store04item37',
+                  'store05item37',
+                  'store06item37',
+                  'store07item37',
+                  'store08item37',
+                  'store09item37',
+                  'store10item37',
+                  'store01item38',
+                  'store02item38',
+                  'store03item38',
+                  'store04item38',
+                  'store05item38',
+                  'store06item38',
+                  'store07item38',
+                  'store08item38',
+                  'store09item38',
+                  'store10item38',
+                  'store01item39',
+                  'store02item39',
+                  'store03item39',
+                  'store04item39',
+                  'store05item39',
+                  'store06item39',
+                  'store07item39',
+                  'store08item39',
+                  'store09item39',
+                  'store10item39',
+                  'store01item40',
+                  'store02item40',
+                  'store03item40',
+                  'store04item40',
+                  'store05item40',
+                  'store06item40',
+                  'store07item40',
+                  'store08item40',
+                  'store09item40',
+                  'store10item40',
+                  'store01item41',
+                  'store02item41',
+                  'store03item41',
+                  'store04item41',
+                  'store05item41',
+                  'store06item41',
+                  'store07item41',
+                  'store08item41',
+                  'store09item41',
+                  'store10item41',
+                  'store01item42',
+                  'store02item42',
+                  'store03item42',
+                  'store04item42',
+                  'store05item42',
+                  'store06item42',
+                  'store07item42',
+                  'store08item42',
+                  'store09item42',
+                  'store10item42',
+                  'store01item43',
+                  'store02item43',
+                  'store03item43',
+                  'store04item43',
+                  'store05item43',
+                  'store06item43',
+                  'store07item43',
+                  'store08item43',
+                  'store09item43',
+                  'store10item43',
+                  'store01item44',
+                  'store02item44',
+                  'store03item44',
+                  'store04item44',
+                  'store05item44',
+                  'store06item44',
+                  'store07item44',
+                  'store08item44',
+                  'store09item44',
+                  'store10item44',
+                  'store01item45',
+                  'store02item45',
+                  'store03item45',
+                  'store04item45',
+                  'store05item45',
+                  'store06item45',
+                  'store07item45',
+                  'store08item45',
+                  'store09item45',
+                  'store10item45',
+                  'store01item46',
+                  'store02item46',
+                  'store03item46',
+                  'store04item46',
+                  'store05item46',
+                  'store06item46',
+                  'store07item46',
+                  'store08item46',
+                  'store09item46',
+                  'store10item46',
+                  'store01item47',
+                  'store02item47',
+                  'store03item47',
+                  'store04item47',
+                  'store05item47',
+                  'store06item47',
+                  'store07item47',
+                  'store08item47',
+                  'store09item47',
+                  'store10item47',
+                  'store01item48',
+                  'store02item48',
+                  'store03item48',
+                  'store04item48',
+                  'store05item48',
+                  'store06item48',
+                  'store07item48',
+                  'store08item48',
+                  'store09item48',
+                  'store10item48',
+                  'store01item49',
+                  'store02item49',
+                  'store03item49',
+                  'store04item49',
+                  'store05item49',
+                  'store06item49',
+                  'store07item49',
+                  'store08item49',
+                  'store09item49',
+                  'store10item49',
+                  'store01item50',
+                  'store02item50',
+                  'store03item50',
+                  'store04item50',
+                  'store05item50',
+                  'store06item50',
+                  'store07item50',
+                  'store08item50',
+                  'store09item50',
+                  'store10item50')]
+str(output3)
+head(output3)
+output3=stack(output3)
+str(output3)
+head(output3)
+id=seq(0,44999,by=1)
+output3=cbind(id,output3$values)
+colnames(output3)=c('id','sales')
+str(output3)
+head(output3)
+
+output4=as.data.frame(fca4)
+str(output4)
+head(output4)
+output4=output4[c('store01item01',
+                  'store02item01',
+                  'store03item01',
+                  'store04item01',
+                  'store05item01',
+                  'store06item01',
+                  'store07item01',
+                  'store08item01',
+                  'store09item01',
+                  'store10item01',
+                  'store01item02',
+                  'store02item02',
+                  'store03item02',
+                  'store04item02',
+                  'store05item02',
+                  'store06item02',
+                  'store07item02',
+                  'store08item02',
+                  'store09item02',
+                  'store10item02',
+                  'store01item03',
+                  'store02item03',
+                  'store03item03',
+                  'store04item03',
+                  'store05item03',
+                  'store06item03',
+                  'store07item03',
+                  'store08item03',
+                  'store09item03',
+                  'store10item03',
+                  'store01item04',
+                  'store02item04',
+                  'store03item04',
+                  'store04item04',
+                  'store05item04',
+                  'store06item04',
+                  'store07item04',
+                  'store08item04',
+                  'store09item04',
+                  'store10item04',
+                  'store01item05',
+                  'store02item05',
+                  'store03item05',
+                  'store04item05',
+                  'store05item05',
+                  'store06item05',
+                  'store07item05',
+                  'store08item05',
+                  'store09item05',
+                  'store10item05',
+                  'store01item06',
+                  'store02item06',
+                  'store03item06',
+                  'store04item06',
+                  'store05item06',
+                  'store06item06',
+                  'store07item06',
+                  'store08item06',
+                  'store09item06',
+                  'store10item06',
+                  'store01item07',
+                  'store02item07',
+                  'store03item07',
+                  'store04item07',
+                  'store05item07',
+                  'store06item07',
+                  'store07item07',
+                  'store08item07',
+                  'store09item07',
+                  'store10item07',
+                  'store01item08',
+                  'store02item08',
+                  'store03item08',
+                  'store04item08',
+                  'store05item08',
+                  'store06item08',
+                  'store07item08',
+                  'store08item08',
+                  'store09item08',
+                  'store10item08',
+                  'store01item09',
+                  'store02item09',
+                  'store03item09',
+                  'store04item09',
+                  'store05item09',
+                  'store06item09',
+                  'store07item09',
+                  'store08item09',
+                  'store09item09',
+                  'store10item09',
+                  'store01item10',
+                  'store02item10',
+                  'store03item10',
+                  'store04item10',
+                  'store05item10',
+                  'store06item10',
+                  'store07item10',
+                  'store08item10',
+                  'store09item10',
+                  'store10item10',
+                  'store01item11',
+                  'store02item11',
+                  'store03item11',
+                  'store04item11',
+                  'store05item11',
+                  'store06item11',
+                  'store07item11',
+                  'store08item11',
+                  'store09item11',
+                  'store10item11',
+                  'store01item12',
+                  'store02item12',
+                  'store03item12',
+                  'store04item12',
+                  'store05item12',
+                  'store06item12',
+                  'store07item12',
+                  'store08item12',
+                  'store09item12',
+                  'store10item12',
+                  'store01item13',
+                  'store02item13',
+                  'store03item13',
+                  'store04item13',
+                  'store05item13',
+                  'store06item13',
+                  'store07item13',
+                  'store08item13',
+                  'store09item13',
+                  'store10item13',
+                  'store01item14',
+                  'store02item14',
+                  'store03item14',
+                  'store04item14',
+                  'store05item14',
+                  'store06item14',
+                  'store07item14',
+                  'store08item14',
+                  'store09item14',
+                  'store10item14',
+                  'store01item15',
+                  'store02item15',
+                  'store03item15',
+                  'store04item15',
+                  'store05item15',
+                  'store06item15',
+                  'store07item15',
+                  'store08item15',
+                  'store09item15',
+                  'store10item15',
+                  'store01item16',
+                  'store02item16',
+                  'store03item16',
+                  'store04item16',
+                  'store05item16',
+                  'store06item16',
+                  'store07item16',
+                  'store08item16',
+                  'store09item16',
+                  'store10item16',
+                  'store01item17',
+                  'store02item17',
+                  'store03item17',
+                  'store04item17',
+                  'store05item17',
+                  'store06item17',
+                  'store07item17',
+                  'store08item17',
+                  'store09item17',
+                  'store10item17',
+                  'store01item18',
+                  'store02item18',
+                  'store03item18',
+                  'store04item18',
+                  'store05item18',
+                  'store06item18',
+                  'store07item18',
+                  'store08item18',
+                  'store09item18',
+                  'store10item18',
+                  'store01item19',
+                  'store02item19',
+                  'store03item19',
+                  'store04item19',
+                  'store05item19',
+                  'store06item19',
+                  'store07item19',
+                  'store08item19',
+                  'store09item19',
+                  'store10item19',
+                  'store01item20',
+                  'store02item20',
+                  'store03item20',
+                  'store04item20',
+                  'store05item20',
+                  'store06item20',
+                  'store07item20',
+                  'store08item20',
+                  'store09item20',
+                  'store10item20',
+                  'store01item21',
+                  'store02item21',
+                  'store03item21',
+                  'store04item21',
+                  'store05item21',
+                  'store06item21',
+                  'store07item21',
+                  'store08item21',
+                  'store09item21',
+                  'store10item21',
+                  'store01item22',
+                  'store02item22',
+                  'store03item22',
+                  'store04item22',
+                  'store05item22',
+                  'store06item22',
+                  'store07item22',
+                  'store08item22',
+                  'store09item22',
+                  'store10item22',
+                  'store01item23',
+                  'store02item23',
+                  'store03item23',
+                  'store04item23',
+                  'store05item23',
+                  'store06item23',
+                  'store07item23',
+                  'store08item23',
+                  'store09item23',
+                  'store10item23',
+                  'store01item24',
+                  'store02item24',
+                  'store03item24',
+                  'store04item24',
+                  'store05item24',
+                  'store06item24',
+                  'store07item24',
+                  'store08item24',
+                  'store09item24',
+                  'store10item24',
+                  'store01item25',
+                  'store02item25',
+                  'store03item25',
+                  'store04item25',
+                  'store05item25',
+                  'store06item25',
+                  'store07item25',
+                  'store08item25',
+                  'store09item25',
+                  'store10item25',
+                  'store01item26',
+                  'store02item26',
+                  'store03item26',
+                  'store04item26',
+                  'store05item26',
+                  'store06item26',
+                  'store07item26',
+                  'store08item26',
+                  'store09item26',
+                  'store10item26',
+                  'store01item27',
+                  'store02item27',
+                  'store03item27',
+                  'store04item27',
+                  'store05item27',
+                  'store06item27',
+                  'store07item27',
+                  'store08item27',
+                  'store09item27',
+                  'store10item27',
+                  'store01item28',
+                  'store02item28',
+                  'store03item28',
+                  'store04item28',
+                  'store05item28',
+                  'store06item28',
+                  'store07item28',
+                  'store08item28',
+                  'store09item28',
+                  'store10item28',
+                  'store01item29',
+                  'store02item29',
+                  'store03item29',
+                  'store04item29',
+                  'store05item29',
+                  'store06item29',
+                  'store07item29',
+                  'store08item29',
+                  'store09item29',
+                  'store10item29',
+                  'store01item30',
+                  'store02item30',
+                  'store03item30',
+                  'store04item30',
+                  'store05item30',
+                  'store06item30',
+                  'store07item30',
+                  'store08item30',
+                  'store09item30',
+                  'store10item30',
+                  'store01item31',
+                  'store02item31',
+                  'store03item31',
+                  'store04item31',
+                  'store05item31',
+                  'store06item31',
+                  'store07item31',
+                  'store08item31',
+                  'store09item31',
+                  'store10item31',
+                  'store01item32',
+                  'store02item32',
+                  'store03item32',
+                  'store04item32',
+                  'store05item32',
+                  'store06item32',
+                  'store07item32',
+                  'store08item32',
+                  'store09item32',
+                  'store10item32',
+                  'store01item33',
+                  'store02item33',
+                  'store03item33',
+                  'store04item33',
+                  'store05item33',
+                  'store06item33',
+                  'store07item33',
+                  'store08item33',
+                  'store09item33',
+                  'store10item33',
+                  'store01item34',
+                  'store02item34',
+                  'store03item34',
+                  'store04item34',
+                  'store05item34',
+                  'store06item34',
+                  'store07item34',
+                  'store08item34',
+                  'store09item34',
+                  'store10item34',
+                  'store01item35',
+                  'store02item35',
+                  'store03item35',
+                  'store04item35',
+                  'store05item35',
+                  'store06item35',
+                  'store07item35',
+                  'store08item35',
+                  'store09item35',
+                  'store10item35',
+                  'store01item36',
+                  'store02item36',
+                  'store03item36',
+                  'store04item36',
+                  'store05item36',
+                  'store06item36',
+                  'store07item36',
+                  'store08item36',
+                  'store09item36',
+                  'store10item36',
+                  'store01item37',
+                  'store02item37',
+                  'store03item37',
+                  'store04item37',
+                  'store05item37',
+                  'store06item37',
+                  'store07item37',
+                  'store08item37',
+                  'store09item37',
+                  'store10item37',
+                  'store01item38',
+                  'store02item38',
+                  'store03item38',
+                  'store04item38',
+                  'store05item38',
+                  'store06item38',
+                  'store07item38',
+                  'store08item38',
+                  'store09item38',
+                  'store10item38',
+                  'store01item39',
+                  'store02item39',
+                  'store03item39',
+                  'store04item39',
+                  'store05item39',
+                  'store06item39',
+                  'store07item39',
+                  'store08item39',
+                  'store09item39',
+                  'store10item39',
+                  'store01item40',
+                  'store02item40',
+                  'store03item40',
+                  'store04item40',
+                  'store05item40',
+                  'store06item40',
+                  'store07item40',
+                  'store08item40',
+                  'store09item40',
+                  'store10item40',
+                  'store01item41',
+                  'store02item41',
+                  'store03item41',
+                  'store04item41',
+                  'store05item41',
+                  'store06item41',
+                  'store07item41',
+                  'store08item41',
+                  'store09item41',
+                  'store10item41',
+                  'store01item42',
+                  'store02item42',
+                  'store03item42',
+                  'store04item42',
+                  'store05item42',
+                  'store06item42',
+                  'store07item42',
+                  'store08item42',
+                  'store09item42',
+                  'store10item42',
+                  'store01item43',
+                  'store02item43',
+                  'store03item43',
+                  'store04item43',
+                  'store05item43',
+                  'store06item43',
+                  'store07item43',
+                  'store08item43',
+                  'store09item43',
+                  'store10item43',
+                  'store01item44',
+                  'store02item44',
+                  'store03item44',
+                  'store04item44',
+                  'store05item44',
+                  'store06item44',
+                  'store07item44',
+                  'store08item44',
+                  'store09item44',
+                  'store10item44',
+                  'store01item45',
+                  'store02item45',
+                  'store03item45',
+                  'store04item45',
+                  'store05item45',
+                  'store06item45',
+                  'store07item45',
+                  'store08item45',
+                  'store09item45',
+                  'store10item45',
+                  'store01item46',
+                  'store02item46',
+                  'store03item46',
+                  'store04item46',
+                  'store05item46',
+                  'store06item46',
+                  'store07item46',
+                  'store08item46',
+                  'store09item46',
+                  'store10item46',
+                  'store01item47',
+                  'store02item47',
+                  'store03item47',
+                  'store04item47',
+                  'store05item47',
+                  'store06item47',
+                  'store07item47',
+                  'store08item47',
+                  'store09item47',
+                  'store10item47',
+                  'store01item48',
+                  'store02item48',
+                  'store03item48',
+                  'store04item48',
+                  'store05item48',
+                  'store06item48',
+                  'store07item48',
+                  'store08item48',
+                  'store09item48',
+                  'store10item48',
+                  'store01item49',
+                  'store02item49',
+                  'store03item49',
+                  'store04item49',
+                  'store05item49',
+                  'store06item49',
+                  'store07item49',
+                  'store08item49',
+                  'store09item49',
+                  'store10item49',
+                  'store01item50',
+                  'store02item50',
+                  'store03item50',
+                  'store04item50',
+                  'store05item50',
+                  'store06item50',
+                  'store07item50',
+                  'store08item50',
+                  'store09item50',
+                  'store10item50')]
+str(output4)
+head(output4)
+output4=stack(output4)
+str(output4)
+head(output4)
+id=seq(0,44999,by=1)
+output4=cbind(id,output4$values)
+colnames(output4)=c('id','sales')
+str(output4)
+head(output4)
+
+write.csv(output1,file='output.csv',col.names=TRUE,row.names=FALSE) #write CSV file to desktop
+#output 1 ARIMA 2017 only has SMAPE score of 27.71900 (private) and 18.28989 (public)
+#output 2 ETS 2017 only has SMAPE score of 27.78405 (private) and 18.42181 (public)
+#output3 gives same score as outut1, output4 same as output2
+#confirm theory that there's no need for all dataset, only 1 year is enough
+#SMAPE is error term, so the lower the better. Model 1 ARIMA is better than model 2 ETS
