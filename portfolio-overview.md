@@ -1,3 +1,5 @@
 Welcome to my portfolio where I share my work sample and projects.
 
-[PowerBI Dashboard](https://app.powerbi.com/view?r=eyJrIjoiNGRlMjc1YmEtYmZmNC00MmQxLWE0MWYtNzI1Yjg1ZDk5ZDAxIiwidCI6ImRkOGNiZWJiLTIxMzktNGRmOC1iNDExLTRlM2U4N2FiZWI1YyIsImMiOjF9)
+The "work sample" folder contains projects I have conducted as part of my professional experience for 4 years as a data analyst. 
+
+The "projects" folder contains assignments, analysis, and projects I have completed as part of my academic training at Northwestern as I purused a MS in Data Science. The projects contain reports and codes that demontrate my fluency in R, Python, and SQL. 
