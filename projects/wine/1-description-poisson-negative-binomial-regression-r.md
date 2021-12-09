@@ -1,0 +1,18 @@
+A large wine manufacturer is conducting a study to predict the number of wine cases ordered based upon the wine characteristics. Specifically, if they can predict the number of cases ordered, they can adjust the wine offering to maximize sales. The more sample cases purchased by wine distribution companies, the more likely is a wine to be sold at a high-end restaurant since these cases would be used to provide tasting samples to restaurants and wine stores around the country.
+
+A dataset of approximately 12,000 commercially available wines is used to analyze the problem. The variables are mostly related to the chemical properties of the wine being sold. Some of the variables have negative values when they technically shouldn’t because the original data was modified for proprietary reasons, so this issue will be ignored in the study. The target variable is the number of sample cases of wine that were purchased by wine distribution companies after sampling a wine.
+
+The wine sales project will include four main sections 1) data exploration 2) data preparation 3) model development 4) model evaluation. Several models are developed, and based on multiple metrics, a champion model is chosen to predict the number of cases of wine that will be sold given certain properties of the wine.
+
+In conclusion, the wine sales project starts with the data exploration section to get to know the data. In this stage, we examine the size (number of observations and variables) of the dataset, identify variables with missing value and outlier issues, and get the descriptive statistics of each variable such as five-number summary, mean, and median. The second section data preparation has two parts: the first part addresses missing value issues, and the second part addresses outlier issues. Majority of the variables have outliers on both ends. Though this is not a deal-breaker on regression assumptions, the existence of outliers on both tails might affect the regression formulas. There are pros and cons for both options of keeping the variables the same or trimming them. So, we keep the variables the same and proceed to the next section. The final decision will be made as we get to the model development phase by examining the betas of the models.
+
+The project then proceed to the third section of model development where five models are created:
+1. OLS multiple linear regression
+2. Poisson regression
+3. Negative binomial regression
+4. Zero-inflated Poisson regression
+5. Zero-inflated negative binomial regression
+
+By examining the coefficients of these models, especially Label Appeal and STARS, we conclude that there’s no need to go back to section 2 to trim the data. Thus, we move forward with the last section of the project: model evaluation. By using three metrics AIC, MSE, and SSE, model #4 zero-inflated Poisson regression is chosen as the champion model. A stand-alone scoring program is developed using this model #4 to forecast the number of wine cases sold for future dataset.
+
+In the work environment in real life, I led a project, using a similar approach as the one engaged in this exercise, to predict the occupancy and rent growth of student housing markets across the country using a variety of factors such as college enrollment, out-of-state tuition, in-state tuition, acceptance rate, international student percentage, and more. At the end of the project, I identified the top 20 markets for the deal team to target and two new key variables to be added to the underwriting process as they have predictive power to forecast occupancy and rent growth in the market. 
