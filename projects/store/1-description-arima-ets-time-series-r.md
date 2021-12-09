@@ -1,0 +1,19 @@
+This project details the submissions for the store item demand forecast challenge on Kaggle. The competition provides five years of historical store, item, and sales data and asks to predict three months of sales for 50 different items at 10 different stores. The challenge provides an opportunity to explore different time series techniques on a relatively simple and clean dataset. Once submission is posted on Kaggle, it generates a private score and a public score for each submission to show how well the predicted values match the actual values. Though Kaggle doesn’t reveal actual values of the following three months of the sales data, the scores are helpful to determine the best models among all those generated in this project. The score metric used here it SMAPE.
+
+The problem used in this competition is starts with the train dataset of sales of 50 items at 50 stores from 1/1/2013 to 12/31/2017, which makes it a complicated time series analysis since we have four variables in the data: date, sales, store, and item. Essentially, the sales of each item at each store is a five-year time series. Thus, putting it all together, we have 500 time series forecasts to run. In addition, 2016 is a leap year with 366 days, so that will affect the regular frequency of 365 on daily time series. As a result, below are questions that need to be answered to proceed with the project.
+
+Can we generate a model to run all 500 forecasts at once? Or do we generate a predictive model for each time series?
+How do we handle leap year?
+How do we handle missing value, if any?
+How do we transform the CSV file to a time series in R?
+
+The problem is significant because this competition poses a real-life question that is frequently faced in business such as retail, manufacturing, sale, etc. Academically, the dataset typically only includes one or two variables i.e.: forecast sales given the impact of marketing. This type of analysis is useful on an ad hoc basis such as when the marketing team needs to evaluate the effectiveness of a campaign. However, on a regular basis, constant forecasts need to be generated to stock the items on the store shelves, order parts at the factories, etc. This type of analysis typically involves more variables in the dataset, and the level of forecast is deeper. As a result, the store item demand forecast challenge poses a significant problem that can be applied in real- life business applications.
+
+In conclusion, after preparing the data into the hierarchical time series format and develop four models using forecast() command, we determine that model #1 using ARIMA model to apply on only 2017 data is the best model with the lowest SMAPE error score. From building these models, we have the following learnings.
+
+Sometimes it’s not feasible and/or necessary to utilize the full dataset. In our case, the using only one year of data provides the same results as using two years of data.
+Beside hts() and forecast package, there are many other techniques in R to apply on time series analysis such as tbats() and prophet package.
+Sometimes ARIMA and ETS models yield very similar results since the Kaggle scores on these models are very close to each.
+Data preparation is a crucial step of a forecasting project. In this study, if we can’t convert the data frame into time series, we can’t proceed with the analysis.
+
+In the work environment in real life, I have gathered time series data of tenant applications and lease signage for the properties across student housing portfolio. I used a similar approach to build a predictive model to forecast occupancy of each property by the end of the leasing season, using historical leasing signage time series data. This is called a "prelease tracker." The final deliverable includes 1) a predictive model to forecast occupancy for each property 2) a KPI dashboard to track leasing progress with financial and operation metrics that got updated every week.
